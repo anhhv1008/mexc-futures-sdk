@@ -36,6 +36,7 @@ import {
   ContractDetailResponse,
   ContractDepthResponse,
 } from "./types/market";
+import JSONBigInt from "json-bigint";
 
 export interface MexcFuturesSDKConfig {
   authToken: string; // WEB authentication key (starts with "WEB...")
@@ -59,6 +60,13 @@ export class MexcFuturesSDK {
       baseURL: config.baseURL || "https://futures.mexc.com/api/v1",
       timeout: config.timeout || 30000,
       headers: generateHeaders(config),
+      transformResponse: [function (data) {
+        try {
+          return JSONBigInt.parse(data);
+        } catch (e) {
+          return data;
+        }
+      }]
     });
 
     // Request interceptor for debugging
